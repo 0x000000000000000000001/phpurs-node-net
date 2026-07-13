@@ -1,0 +1,18 @@
+package:
+  name: node-net
+  dependencies:
+    - effect
+    - either
+    - exceptions
+    - foreign
+    - maybe
+    - node-buffer
+    - node-event-emitter
+    - node-fs
+    - node-streams
+    - nullable
+    - options
+    - prelude
+workspace:
+  package_set:
+    registry: 46.0.0
