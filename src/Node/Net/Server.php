@@ -97,4 +97,14 @@ $exports['closeImpl'] = function($server) {
     }
 };
 
+$exports['newServerImpl'] = function(...$args) { throw new \Exception("Function newServerImpl is not implemented yet. PRs welcome!"); };
+$exports['newServerOptionsImpl'] = function(...$args) { throw new \Exception("Function newServerOptionsImpl is not implemented yet. PRs welcome!"); };
+$exports['addressTcpImpl'] = function(...$args) { throw new \Exception("Function addressTcpImpl is not implemented yet. PRs welcome!"); };
+$exports['addressIpcImpl'] = function(...$args) { throw new \Exception("Function addressIpcImpl is not implemented yet. PRs welcome!"); };
+$exports['getConnectionsImpl'] = function(...$args) { throw new \Exception("Function getConnectionsImpl is not implemented yet. PRs welcome!"); };
+$exports['listeningImpl'] = function(...$args) { throw new \Exception("Function listeningImpl is not implemented yet. PRs welcome!"); };
+$exports['maxConnectionsImpl'] = function(...$args) { throw new \Exception("Function maxConnectionsImpl is not implemented yet. PRs welcome!"); };
+$exports['refImpl'] = function(...$args) { throw new \Exception("Function refImpl is not implemented yet. PRs welcome!"); };
+$exports['unrefImpl'] = function(...$args) { throw new \Exception("Function unrefImpl is not implemented yet. PRs welcome!"); };
+
 return $exports;
