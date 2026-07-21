@@ -1,4 +1,4 @@
-# purescript-node-net
+# phpurs-node-net
 
 [![Latest release](http://img.shields.io/github/release/purescript-node/purescript-node-net.svg)](https://github.com/purescript-node/purescript-node-net/releases)
 [![Build status](https://github.com/purescript-node/purescript-node-net/workflows/CI/badge.svg?branch=master)](https://github.com/purescript-node/purescript-node-net/actions?query=workflow%3ACI+branch%3Amaster)
