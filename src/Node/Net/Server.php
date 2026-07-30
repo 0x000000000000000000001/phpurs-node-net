@@ -18,8 +18,8 @@ $exports['listenImpl'] = function($server, $options) {
         $deferred = new \Amp\DeferredFuture();
 
         $reqMock = new class($request) {
-            public $dataListener = null;
-            public $endListener = null;
+            public $dataListener;
+            public $endListener;
             public $headers;
             public $url;
             public $method;
