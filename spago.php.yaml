@@ -13,7 +13,6 @@ package:
     - nullable
     - options
     - prelude
-workspace:
   package_set:
     registry: 46.0.0
 
