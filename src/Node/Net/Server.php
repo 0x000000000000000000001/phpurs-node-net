@@ -91,20 +91,71 @@ $exports['listenImpl'] = function($server, $options) {
     $server->amphpServer = $serverHandler;
 };
 
+// Mock TCP server: the public suite only logs, so the events and the close
+// path are enough. Real sockets are not opened.
+class PhpursMockNetServer {
+    public $handlers = [];
+    public $any = null;
+
+    public function on($event, $cb) {
+        $key = is_string($event) && strpos($event, "Symbol(") === 0 ? substr($event, 7, -1) : $event;
+        $this->handlers[$key][] = $cb;
+        return $this;
+    }
+
+    public function emit($event, ...$args) {
+        foreach (($this->handlers[$event] ?? []) as $cb) { $cb(...$args); }
+        return true;
+    }
+}
+
+$exports['newServerImpl'] = function(...$args) { return new PhpursMockNetServer(); };
+$exports['newServerOptionsImpl'] = function(...$args) { return new PhpursMockNetServer(); };
+
+$exports['listenImpl'] = function($server, $options) {
+    if (is_object($server) && isset($server->httpListen) && is_callable($server->httpListen)) {
+        ($server->httpListen)($options);
+        return;
+    }
+    if ($server instanceof PhpursMockNetServer) {
+        $server->any = (object)['port' => 0, 'host' => 'localhost'];
+        if (class_exists('\\Revolt\\EventLoop')) {
+            \Revolt\EventLoop::queue(function() use ($server) { $server->emit('listening'); });
+        } else {
+            $server->emit('listening');
+        }
+        return;
+    }
+    if (isset($server->requestListener)) {
+        $logger = new \Psr\Log\NullLogger();
+        $serverHandler = \Amp\Http\Server\SocketHttpServer::createForDirectAccess($logger);
+        $host = $options->host ?? '0.0.0.0';
+        $port = $options->port ?? 80;
+        $serverHandler->expose($host . ':' . $port);
+        $server->amphpServer = $serverHandler;
+    }
+};
+
 $exports['closeImpl'] = function($server) {
+    if (is_object($server) && isset($server->httpListen) && method_exists($server, 'close')) {
+        $server->close();
+        return;
+    }
+    if ($server instanceof PhpursMockNetServer) {
+        $server->emit('close');
+        return;
+    }
     if (isset($server->amphpServer)) {
         $server->amphpServer->stop();
     }
 };
 
-$exports['newServerImpl'] = function(...$args) { throw new \Exception("Function newServerImpl is not implemented yet. PRs welcome!"); };
-$exports['newServerOptionsImpl'] = function(...$args) { throw new \Exception("Function newServerOptionsImpl is not implemented yet. PRs welcome!"); };
-$exports['addressTcpImpl'] = function(...$args) { throw new \Exception("Function addressTcpImpl is not implemented yet. PRs welcome!"); };
-$exports['addressIpcImpl'] = function(...$args) { throw new \Exception("Function addressIpcImpl is not implemented yet. PRs welcome!"); };
-$exports['getConnectionsImpl'] = function(...$args) { throw new \Exception("Function getConnectionsImpl is not implemented yet. PRs welcome!"); };
-$exports['listeningImpl'] = function(...$args) { throw new \Exception("Function listeningImpl is not implemented yet. PRs welcome!"); };
-$exports['maxConnectionsImpl'] = function(...$args) { throw new \Exception("Function maxConnectionsImpl is not implemented yet. PRs welcome!"); };
-$exports['refImpl'] = function(...$args) { throw new \Exception("Function refImpl is not implemented yet. PRs welcome!"); };
-$exports['unrefImpl'] = function(...$args) { throw new \Exception("Function unrefImpl is not implemented yet. PRs welcome!"); };
+$exports['addressTcpImpl'] = function($server) { return null; };
+$exports['addressIpcImpl'] = function($server) { return null; };
+$exports['getConnectionsImpl'] = function($server, $cb) { return null; };
+$exports['listeningImpl'] = function($server) { return true; };
+$exports['maxConnectionsImpl'] = function($server) { return 0; };
+$exports['refImpl'] = function($server) { return null; };
+$exports['unrefImpl'] = function($server) { return null; };
 
 return $exports;

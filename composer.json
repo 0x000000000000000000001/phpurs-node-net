@@ -1,0 +1,6 @@
+{
+    "name": "phpurs/node-net",
+    "require": {
+        "revolt/event-loop": "^1.0"
+    }
+}
